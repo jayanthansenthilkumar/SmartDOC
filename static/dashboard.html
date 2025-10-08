@@ -7,103 +7,251 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body class="dashboard-page">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-file-alt"></i>SmartDoc
-            </a>
-            <div class="d-flex align-items-center">
-                <span class="me-3" id="userName"></span>
-                <button class="btn btn-outline-danger btn-sm" onclick="logout()">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
-                </button>
-            </div>
+<body class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-file-alt logo-icon"></i>
+            <h4 class="mb-0">SmartDoc</h4>
         </div>
-    </nav>
+        
+        <ul class="sidebar-menu">
+            <li class="menu-item active">
+                <a href="#dashboard" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#upload" data-section="upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload Document</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#documents" data-section="documents">
+                    <i class="fas fa-folder-open"></i>
+                    <span>My Documents</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#analytics" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+        </ul>
 
-    <div class="container mt-4">
-        <!-- Stats Cards -->
-        <div class="row mb-4" id="statsSection">
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon primary me-3">
-                            <i class="fas fa-file"></i>
-                        </div>
-                        <div>
-                            <h3 class="mb-0" id="totalDocs">0</h3>
-                            <p class="text-muted mb-0">Total Documents</p>
-                        </div>
-                    </div>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <p class="user-name mb-0" id="sidebarUserName">User</p>
+                    <small class="text-muted">Standard User</small>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon success me-3">
-                            <i class="fas fa-smile"></i>
-                        </div>
-                        <div>
-                            <h3 class="mb-0" id="positiveDocs">0</h3>
-                            <p class="text-muted mb-0">Positive</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon warning me-3">
-                            <i class="fas fa-meh"></i>
-                        </div>
-                        <div>
-                            <h3 class="mb-0" id="neutralDocs">0</h3>
-                            <p class="text-muted mb-0">Neutral</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon info me-3">
-                            <i class="fas fa-frown"></i>
-                        </div>
-                        <div>
-                            <h3 class="mb-0" id="negativeDocs">0</h3>
-                            <p class="text-muted mb-0">Negative</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upload Section -->
-        <div class="upload-section fade-in">
-            <h3 class="mb-4"><i class="fas fa-upload me-2"></i>Upload Document</h3>
-            <div class="upload-zone" id="uploadZone">
-                <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                <h5>Drag & Drop your document here</h5>
-                <p class="text-muted">or click to browse</p>
-                <p class="text-muted"><small>Supported formats: PDF, TXT (Max 16MB)</small></p>
-                <input type="file" id="fileInput" accept=".pdf,.txt" style="display: none;">
-            </div>
-        </div>
-
-        <!-- Documents Section -->
-        <div class="mt-5">
-            <h3 class="mb-4"><i class="fas fa-folder-open me-2"></i>My Documents</h3>
-            <div id="documentsContainer">
-                <!-- Documents will be loaded here -->
             </div>
         </div>
     </div>
 
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="btn btn-link sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h5 class="mb-0 page-title">Dashboard</h5>
+            </div>
+            <div class="header-right">
+                <div class="header-user">
+                    <span class="me-3" id="userName"></span>
+                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Dashboard Section -->
+            <div class="content-section active" id="dashboardSection">
+            <!-- Dashboard Section -->
+            <div class="content-section active" id="dashboardSection">
+                <!-- Welcome Card -->
+                <div class="welcome-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2>Welcome back, <span id="welcomeUserName">User</span>! 👋</h2>
+                            <p class="text-muted mb-0">Here's what's happening with your documents today</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="welcome-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card stats-card-primary">
+                            <div class="stats-icon">
+                                <i class="fas fa-file"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="totalDocs">0</h3>
+                                <p>Total Documents</p>
+                                <div class="stats-trend">
+                                    <i class="fas fa-arrow-up"></i> 12% this week
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card stats-card-success">
+                            <div class="stats-icon">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="positiveDocs">0</h3>
+                                <p>Positive Sentiment</p>
+                                <div class="stats-trend success">
+                                    <i class="fas fa-arrow-up"></i> 8% increase
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card stats-card-warning">
+                            <div class="stats-icon">
+                                <i class="fas fa-meh"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="neutralDocs">0</h3>
+                                <p>Neutral Sentiment</p>
+                                <div class="stats-trend">
+                                    <i class="fas fa-minus"></i> Stable
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card stats-card-danger">
+                            <div class="stats-icon">
+                                <i class="fas fa-frown"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="negativeDocs">0</h3>
+                                <p>Negative Sentiment</p>
+                                <div class="stats-trend danger">
+                                    <i class="fas fa-arrow-down"></i> 3% decrease
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentActivity">
+                            <p class="text-muted">Loading recent documents...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="content-section" id="uploadSection">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Document</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-zone" id="uploadZone">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h5>Drag & Drop your document here</h5>
+                            <p class="text-muted">or click to browse</p>
+                            <p class="text-muted"><small>Supported formats: PDF, TXT (Max 16MB)</small></p>
+                            <input type="file" id="fileInput" accept=".pdf,.txt" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Section -->
+            <div class="content-section" id="documentsSection">
+                <div class="card dashboard-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-folder-open me-2"></i>My Documents</h5>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" placeholder="Search documents..." id="searchDocuments">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="documentsContainer">
+                            <!-- Documents will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="content-section" id="analyticsSection">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Sentiment Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="sentiment-chart">
+                                    <canvas id="sentimentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card dashboard-card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Upload Trends</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="trends-info">
+                                    <p class="text-muted">Document upload statistics and trends will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <div class="footer-content">
+                <p class="mb-0">&copy; 2025 SmartDoc. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Help</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>

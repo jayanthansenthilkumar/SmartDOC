@@ -7,6 +7,41 @@ if (!requireAdmin()) {
 const user = getCurrentUser();
 document.getElementById('userName').textContent = user.full_name;
 
+// Sidebar toggle
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('expanded');
+});
+
+// Navigation
+const navLinks = document.querySelectorAll('.nav-link');
+const contentSections = document.querySelectorAll('.content-section');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('data-section');
+        
+        // Update active link
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        // Show target section
+        contentSections.forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        const targetSection = document.getElementById(target + 'Section');
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+    });
+});
+
 // Load all data
 loadStats();
 loadUsers();
@@ -27,14 +62,26 @@ async function loadStats() {
             document.getElementById('totalAnalyses').textContent = stats.total_analyses;
             document.getElementById('positiveDocs').textContent = stats.sentiment_breakdown.positive;
             
-            // Update analytics tab
-            document.getElementById('positiveCount').textContent = stats.sentiment_breakdown.positive;
-            document.getElementById('neutralCount').textContent = stats.sentiment_breakdown.neutral;
-            document.getElementById('negativeCount').textContent = stats.sentiment_breakdown.negative;
+            // Update user count badge
+            document.getElementById('userCount').textContent = `${stats.total_users} users`;
             
-            document.getElementById('analyticsUsers').textContent = stats.total_users;
-            document.getElementById('analyticsDocuments').textContent = stats.total_documents;
-            document.getElementById('analyticsAnalyses').textContent = stats.total_analyses;
+            // Update document count badge
+            document.getElementById('docCount').textContent = `${stats.total_documents} documents`;
+            
+            // Update sentiment progress bars
+            const total = stats.total_documents || 1; // Avoid division by zero
+            const positivePercent = Math.round((stats.sentiment_breakdown.positive / total) * 100);
+            const neutralPercent = Math.round((stats.sentiment_breakdown.neutral / total) * 100);
+            const negativePercent = Math.round((stats.sentiment_breakdown.negative / total) * 100);
+            
+            document.getElementById('positiveBar').style.width = positivePercent + '%';
+            document.getElementById('positiveBar').textContent = `${stats.sentiment_breakdown.positive} (${positivePercent}%)`;
+            
+            document.getElementById('neutralBar').style.width = neutralPercent + '%';
+            document.getElementById('neutralBar').textContent = `${stats.sentiment_breakdown.neutral} (${neutralPercent}%)`;
+            
+            document.getElementById('negativeBar').style.width = negativePercent + '%';
+            document.getElementById('negativeBar').textContent = `${stats.sentiment_breakdown.negative} (${negativePercent}%)`;
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -119,17 +166,23 @@ function displayDocuments(documents) {
             ? '<span class="badge bg-warning">Neutral</span>'
             : '<span class="badge bg-secondary">N/A</span>';
         
+        // Get user info
+        const userName = doc.user ? doc.user.full_name : `User ${doc.user_id}`;
+        
         return `
             <tr>
                 <td>${doc.id}</td>
-                <td>${doc.filename}</td>
-                <td>${doc.user_id}</td>
+                <td>
+                    <i class="fas fa-file-${doc.file_type === 'pdf' ? 'pdf text-danger' : 'alt text-primary'} me-2"></i>
+                    ${doc.filename}
+                </td>
+                <td>${userName}</td>
                 <td><span class="badge bg-info">${doc.file_type.toUpperCase()}</span></td>
                 <td>${formatFileSize(doc.file_size)}</td>
                 <td>${sentimentBadge}</td>
                 <td>${formatDate(doc.uploaded_at)}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" onclick="deleteDocument(${doc.id})">
+                    <button class="btn btn-danger btn-sm" onclick="deleteDocument(${doc.id})" title="Delete Document">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>

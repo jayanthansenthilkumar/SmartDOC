@@ -6,6 +6,55 @@ if (!requireAuth()) {
 // Display user name
 const user = getCurrentUser();
 document.getElementById('userName').textContent = user.full_name;
+document.getElementById('sidebarUserName').textContent = user.full_name;
+document.getElementById('welcomeUserName').textContent = user.full_name;
+
+// Sidebar toggle
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+});
+
+// Mobile sidebar toggle
+if (window.innerWidth <= 768) {
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+}
+
+// Navigation between sections
+const menuItems = document.querySelectorAll('.menu-item a');
+const contentSections = document.querySelectorAll('.content-section');
+
+menuItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Remove active class from all menu items
+        document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+        
+        // Add active class to clicked item
+        item.parentElement.classList.add('active');
+        
+        // Hide all sections
+        contentSections.forEach(section => section.classList.remove('active'));
+        
+        // Show target section
+        const targetSection = item.getAttribute('data-section');
+        document.getElementById(targetSection + 'Section').classList.add('active');
+        
+        // Update page title
+        const pageTitle = item.querySelector('span').textContent;
+        document.querySelector('.page-title').textContent = pageTitle;
+        
+        // Close mobile sidebar
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('active');
+        }
+    });
+});
 
 // Upload zone handling
 const uploadZone = document.getElementById('uploadZone');
@@ -45,7 +94,9 @@ fileInput.addEventListener('change', (e) => {
 async function handleFileUpload(file) {
     // Validate file type
     const allowedTypes = ['application/pdf', 'text/plain'];
-    if (!allowedTypes.includes(file.type)) {
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedTypes.includes(file.type) && !['pdf', 'txt'].includes(fileExtension)) {
         Swal.fire({
             icon: 'error',
             title: 'Invalid File Type',
@@ -68,12 +119,24 @@ async function handleFileUpload(file) {
     const formData = new FormData();
     formData.append('file', file);
     
-    // Show loading
+    // Show loading with progress
     Swal.fire({
-        title: 'Analyzing Document...',
-        html: 'This may take a few moments<br><div class="spinner-border text-primary mt-3" role="status"></div>',
+        title: 'Uploading & Analyzing Document...',
+        html: `
+            <div class="upload-progress">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <p>This may take a few moments</p>
+                <div class="progress mt-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        `,
         allowOutsideClick: false,
-        showConfirmButton: false
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
     
     try {
@@ -88,27 +151,33 @@ async function handleFileUpload(file) {
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: 'Document analyzed successfully',
-                timer: 1500,
-                showConfirmButton: false
+                text: 'Document uploaded and analyzed successfully!',
+                confirmButtonColor: '#667eea',
+                timer: 2000
             }).then(() => {
                 // Reload documents
                 loadDocuments();
                 loadStats();
                 fileInput.value = '';
+                
+                // Switch to documents view
+                document.querySelector('[data-section="documents"]').click();
             });
         } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Upload Failed',
-                text: data.error || 'Could not upload document'
+                text: data.error || 'Could not upload document',
+                confirmButtonColor: '#667eea'
             });
         }
     } catch (error) {
+        console.error('Upload error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An error occurred during upload'
+            text: 'An error occurred during upload. Please try again.',
+            confirmButtonColor: '#667eea'
         });
     }
 }
@@ -133,16 +202,61 @@ function displayDocuments(documents) {
     
     if (documents.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-file-alt"></i>
-                <h5>No documents yet</h5>
-                <p>Upload your first document to get started!</p>
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-file-alt" style="font-size: 4rem; opacity: 0.3;"></i>
+                <h5 class="mt-3">No documents yet</h5>
+                <p class="text-muted">Upload your first document to get started!</p>
+                <button class="btn btn-primary mt-3" onclick="document.querySelector('[data-section=\\'upload\\']').click()">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload Document
+                </button>
             </div>
         `;
+        
+        // Update recent activity
+        updateRecentActivity([]);
         return;
     }
     
     container.innerHTML = documents.map(doc => createDocumentCard(doc)).join('');
+    
+    // Update recent activity with latest 5 documents
+    updateRecentActivity(documents.slice(0, 5));
+}
+
+// Update recent activity
+function updateRecentActivity(documents) {
+    const activityContainer = document.getElementById('recentActivity');
+    
+    if (!documents || documents.length === 0) {
+        activityContainer.innerHTML = `
+            <p class="text-muted text-center">No recent activity</p>
+        `;
+        return;
+    }
+    
+    activityContainer.innerHTML = documents.map(doc => {
+        const sentiment = doc.analysis ? doc.analysis.sentiment : 'unknown';
+        const sentimentIcon = sentiment === 'positive' ? 'smile' : 
+                             sentiment === 'negative' ? 'frown' : 'meh';
+        
+        return `
+            <div class="activity-item">
+                <div class="activity-icon primary">
+                    <i class="fas fa-file-${doc.file_type === 'pdf' ? 'pdf' : 'alt'}"></i>
+                </div>
+                <div class="activity-details">
+                    <h6>${doc.filename}</h6>
+                    <small>
+                        ${doc.analysis ? `Analyzed as <strong>${sentiment}</strong>` : 'Pending analysis'}
+                        ${doc.analysis ? `<i class="fas fa-${sentimentIcon} ms-1"></i>` : ''}
+                    </small>
+                </div>
+                <div class="activity-time">
+                    ${formatDate(doc.uploaded_at)}
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Create document card
@@ -299,3 +413,23 @@ async function loadStats() {
 // Initial load
 loadDocuments();
 loadStats();
+
+// Search documents
+const searchInput = document.getElementById('searchDocuments');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const documentCards = document.querySelectorAll('.document-card');
+        
+        documentCards.forEach(card => {
+            const filename = card.querySelector('.document-header h4')?.textContent.toLowerCase() || '';
+            const summary = card.querySelector('.card-body p')?.textContent.toLowerCase() || '';
+            
+            if (filename.includes(searchTerm) || summary.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+}
