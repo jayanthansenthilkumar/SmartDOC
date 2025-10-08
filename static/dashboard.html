@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDoc - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-file-alt"></i>SmartDoc
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="me-3" id="userName"></span>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Stats Cards -->
+        <div class="row mb-4" id="statsSection">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon primary me-3">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="totalDocs">0</h3>
+                            <p class="text-muted mb-0">Total Documents</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon success me-3">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="positiveDocs">0</h3>
+                            <p class="text-muted mb-0">Positive</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon warning me-3">
+                            <i class="fas fa-meh"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="neutralDocs">0</h3>
+                            <p class="text-muted mb-0">Neutral</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon info me-3">
+                            <i class="fas fa-frown"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" id="negativeDocs">0</h3>
+                            <p class="text-muted mb-0">Negative</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section fade-in">
+            <h3 class="mb-4"><i class="fas fa-upload me-2"></i>Upload Document</h3>
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <h5>Drag & Drop your document here</h5>
+                <p class="text-muted">or click to browse</p>
+                <p class="text-muted"><small>Supported formats: PDF, TXT (Max 16MB)</small></p>
+                <input type="file" id="fileInput" accept=".pdf,.txt" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="mt-5">
+            <h3 class="mb-4"><i class="fas fa-folder-open me-2"></i>My Documents</h3>
+            <div id="documentsContainer">
+                <!-- Documents will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

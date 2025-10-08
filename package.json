@@ -1,0 +1,12 @@
+{
+  "name": "smartdoc",
+  "version": "1.0.0",
+  "description": "AI-Powered Document Analyzer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["AI", "NLP", "Document Analysis"],
+  "author": "",
+  "license": "MIT"
+}
